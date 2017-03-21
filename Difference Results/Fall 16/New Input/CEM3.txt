@@ -1,0 +1,18 @@
+ Comparing the following files: 
+      1) test3c.out		('New' Version)
+      2) test3o.out		('Old' Version)
+ 
+ Lines in test3c.out:         1039
+ Lines in test3o.out:         1039
+ 
+ 
+ --------------------
+ Total mismatches:            1
+ --------------------
+ 
+ Differences occurred at the following lines:
+ 
+ Mismatch at line        1039
+    -> From test3c.out:		 Elapsed cpu time  =  0. min and  0.057 sec.
+    -> From test3o.out:		 Elapsed cpu time  =  0. min and  0.061 sec.
+ 
