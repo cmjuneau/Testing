@@ -3,10 +3,6 @@ example.c
 example.l
 output.txt
 
-simcl_New.out
-simcl_Err.out
-errDiff
-
-simcl_Old.out
-simcl_New.out
-oldNewDiff
+fig5.1-5.light.out
+fig5.1-5.noGPL.out
+lightDiff
