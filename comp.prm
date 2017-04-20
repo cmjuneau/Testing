@@ -3,6 +3,6 @@ example.c
 example.l
 output.txt
 
-fig5.1-5.light.out
-fig5.1-5.noGPL.out
+upcl_Oct.out
+upcl_Mar.out
 lightDiff
