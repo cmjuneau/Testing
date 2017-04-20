@@ -1,0 +1,26 @@
+Instructions:  enter names (shown below): new version output, old version ouput, output file for results...EX.
+example.c
+example.l
+output.txt
+
+2            /NumComp/ -> Sets of Files to be compared
+
+2            /NumTests/ -> No. of files used for analysis
+cem1c.out
+cemlaq1c.out
+
+2
+cem2c.out
+cemlaq2c.out
+
+2
+laqc1.out
+laqo1.out
+
+2
+laq2c.out
+laqo2.out
+
+2
+laqc3.out
+laqo3.out

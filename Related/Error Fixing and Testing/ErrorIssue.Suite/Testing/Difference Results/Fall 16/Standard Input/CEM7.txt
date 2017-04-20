@@ -1,0 +1,26 @@
+ Comparing the following files: 
+      1) test7c.out		('New' Version)
+      2) test7o.out		('Old' Version)
+ 
+ Lines in test7c.out:         1475
+ Lines in test7o.out:         1475
+ 
+ 
+ --------------------
+ Total mismatches:            3
+ --------------------
+ 
+ Differences occurred at the following lines:
+ 
+ Mismatch at line          93
+    -> From test7c.out:		     Fri Nov 25 16:20:36 2016
+    -> From test7o.out:		     Fri Nov 25 15:49:40 2016
+ 
+ Mismatch at line         260
+    -> From test7c.out:		 Z =*** 9.184E+00 +/- 7.35E-01  1.034E+02 +/- 1.65E+02
+    -> From test7o.out:		 Z =  0 9.184E+00 +/- 7.35E-01  1.034E+02 +/- 1.65E+02
+ 
+ Mismatch at line        1475
+    -> From test7c.out:		 Elapsed cpu time  =  0. min and  0.270 sec.
+    -> From test7o.out:		 Elapsed cpu time  =  0. min and  0.266 sec.
+ 
