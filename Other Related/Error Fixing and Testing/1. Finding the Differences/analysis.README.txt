@@ -1,5 +1,0 @@
-Comments:
-
-It appears from graphing the data that there are significantly less data points for both the new versions.  Also, the new versions do NOT numerically differ at all.  Therefore, it is safe to say that data was changed somewhere, or that the process owas changed accidentally.  The next step is to isolate this issue to a file (or set of files), then we can determine what is causing the error from there by substituting in different routines.
-
-It is clear that if we can fix the New version (with Error Protection Off), then the issue will be resolved.
