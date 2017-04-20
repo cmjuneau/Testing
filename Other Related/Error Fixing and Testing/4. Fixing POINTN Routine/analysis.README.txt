@@ -1,0 +1,15 @@
+Comments:
+
+Note that for the old (October) version of the code, the same results were used - no change was made to the program (from October) during this analysis
+
+A "binary" search was performed to find the errors.  i.e. split the POINTN routine into several chunks.  Therefore, the error will be easier to spot.
+
+
+FINAL ANSWER:
+------------------------------------------------------
+- A use of error protection caused an issue.  The line was supposed to read:
+
+(Old Version) "PMEMO(1,K)=PMEMO(1,K)+PMEMO(4,K)/EK*TAUK"
+(New Version) "PMEMO(1,K)=PMEMO(1,K)+PMEMO(4,K)/temp1", where temp1 = EK*TAUK
+
+ISSUE: Instead of multiplying by TAUK like in the old version, I had set the program to DIVIDE by TAUK instead accidentally.  Resolving this fixed all errors.

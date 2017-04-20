@@ -1,0 +1,24 @@
+Instructions:  enter names (shown below): new version output, old version osimut, output file for results...EX.
+example.c
+example.l
+output.txt
+
+simcl_LAQ1.out
+simcl_LAQ2.out
+LAQDiff
+
+simcl_LAQ2.out
+simcl_Other.out
+otherDiff
+
+simcl_Old.out
+simcl_LAQ1.out
+oldvsLAQ1Diff
+
+simcl_Old.out
+simcl_LAQ2.out
+oldvsLAQ2Diff
+
+simcl_Old.out
+simcl_Other.out
+oldvsOtherDiff

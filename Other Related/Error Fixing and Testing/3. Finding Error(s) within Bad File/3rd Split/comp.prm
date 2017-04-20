@@ -1,0 +1,16 @@
+Instructions:  enter names (shown below): new version output, old version osimut, output file for results...EX.
+example.c
+example.l
+output.txt
+
+simcl_Old.out
+simcl_1st-2Routine.out
+1stRoutineNew
+
+simcl_Old.out
+simcl_Rest.out
+RestNew
+
+simcl_1st-2Routine.out
+simcl_Rest.out
+newDiff

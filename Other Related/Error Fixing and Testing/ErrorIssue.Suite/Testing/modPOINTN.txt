@@ -1,0 +1,22 @@
+ Comparing the following files: 
+      1) simcl_Old.out		('New' Version)
+      2) simcl_Modified.out		('Old' Version)
+ 
+ Lines in simcl_Old.out:          733
+ Lines in simcl_Modified.out:          733
+ 
+ 
+ --------------------
+ Total mismatches:            2
+ --------------------
+ 
+ Differences occurred at the following lines:
+ 
+ Mismatch at line          78
+    -> From simcl_Old.out:		     Mon Mar 20 11:44:40 2017
+    -> From simcl_Modified.out:		     Tue Mar 21 12:15:21 2017
+ 
+ Mismatch at line         733
+    -> From simcl_Old.out:		 Elapsed cpu time  =  1. min and 45.721 sec.
+    -> From simcl_Modified.out:		 Elapsed cpu time  =  1. min and 41.076 sec.
+ 

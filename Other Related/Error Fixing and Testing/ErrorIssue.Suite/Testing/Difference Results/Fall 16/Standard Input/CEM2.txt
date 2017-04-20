@@ -1,0 +1,18 @@
+ Comparing the following files: 
+      1) test2c.out		('New' Version)
+      2) test2o.out		('Old' Version)
+ 
+ Lines in test2c.out:          490
+ Lines in test2o.out:          490
+ 
+ 
+ --------------------
+ Total mismatches:            1
+ --------------------
+ 
+ Differences occurred at the following lines:
+ 
+ Mismatch at line         490
+    -> From test2c.out:		 Elapsed cpu time  =  0. min and  0.479 sec.
+    -> From test2o.out:		 Elapsed cpu time  =  0. min and  0.475 sec.
+ 

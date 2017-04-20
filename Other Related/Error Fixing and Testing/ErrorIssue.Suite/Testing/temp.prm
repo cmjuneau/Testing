@@ -1,0 +1,18 @@
+This file is a temporary file
+to be used by the test script
+to "fill" space.
+
+In the test input, we want the
+order of files to be:
+(CEM)
+(CEM-LAQ)
+(LAQ)
+
+This file, temp.inp, allows us
+to keep this order easily.  We
+want these files in the same
+order so the MATLAB tool can
+display these value IN ORDER,
+otherwise the graphs produced
+will not be able to have a legend
+applied to them.

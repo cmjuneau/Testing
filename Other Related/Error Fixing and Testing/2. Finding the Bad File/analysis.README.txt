@@ -1,0 +1,33 @@
+Comments:
+
+Note that for the old (October) version of the code, the same results were used - no change was made to the program (from October) during this analysis
+
+
+LAQ1.f Differences:
+--------------------------------------------
+-Compared to LAQ2.f, the output files differ greatly; values are different, however closer together (numerically) than when compared to the October Version.
+- No differences - only time
+-
+
+
+LAQ2.f Differences:
+--------------------------------------------
+- Numerically lower than other output files.
+- When plotted, curve shape mostly follows that of the others, however is typically an order of magnitude lower.
+-
+
+
+Other Differences:
+--------------------------------------------
+- No differences - only time
+- Differs greatly from LAQ2.f output
+-
+
+Plot Differences:
+--------------------------------------------
+-For all angles, LAQ2 is the only numerically different plot.  Data points are lower on curve, following the same shape.
+-LAQ2 file is the only one that is numerically different when graphed.
+-
+
+
+RESULTS: Issue lies in LAQ2.f File somewhere.  Suggested seperate the file into portions due to large size and find differences that way.

@@ -1,0 +1,27 @@
+test3.c
+test3.c.aux
+6 3 0           	      /Aproj, Zproj, Strangeness/
+208 82  			              /Anucl, Znucl/
+-0.1                             /t0mev/
+0	                              /dt0/
+-100000                             /t0max/
+5	                              /limc/
+10.     /dteta/angular distributions [mang > 0]
+ 1      /mspec/
+ 1      /mpyld/
+ 1      /mchy/
+ 1      /misy/
+ 1      /mdubl/
+ 1      /mang/
+1 9  /ipar1,ipar2/ range of ejectile types
+0 36 72 108 144 180 216 252 288 324 36 72 108 144 180 216 252 288 324 360
+0 .1 0 0 .1 0 0 .1 0 0 .1 0 /tmin, tmax, dt, j=1-4/
+66     /nevtype/
+66	/npreqtyp/
+0      /ipisa/  (0/1) next line is not need if ipisa=0
+0	/ihist/ (0/1)
+1       /ityp/
+2       /nh/file (line 2).
+CEM03.03F Test results, post cascade
+Li-6 + Pb-208 @ 0.1 GeV/A, 5 events
+-2 -2 -2		/stop/

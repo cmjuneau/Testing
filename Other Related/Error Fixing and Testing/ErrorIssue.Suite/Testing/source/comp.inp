@@ -1,0 +1,41 @@
+Instructions:  enter names (shown below): new version output, old version ouput, output file for results...EX.
+example.c
+example.l
+output.txt
+
+7            /NumComp/ -> Sets of Files to be compared
+
+2            /NumTests/ -> No. of files used for analysis
+test1c.out
+test1o.out
+CEM1
+
+2
+test2c.out
+test2o.out
+CEM2
+
+2
+test3c.out
+test3o.out
+CEM3
+
+2
+test4c.out
+test4o.out
+CEM4
+
+2
+test5c.out
+test5o.out
+CEM5
+
+2
+test6c.out
+test6o.out
+CEM6
+
+2
+test7c.out
+test7o.out
+CEM7
