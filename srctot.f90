@@ -1154,7 +1154,7 @@
 !
 !		----- Setting up variables -----
     integer :: i, ej, T, theta, headmult, MaxLines, nl, j, k, l, eject, indx, ddang(10)
-    integer :: tindx, Ti, Tf, corr, ejtype, ejindx, ejecta(11), energi, thetai, stat
+    integer :: tindx, Ti, Tf, corr, ejtype, ejindx, ejecta(11), energi, thetai, stat, tempShift
     integer :: offset, N, dataSet, partNum(10), tempNum
     real :: ddif, ang(360), tempang, angint, Tir, Tfr, temp, thetar, lang(11),energr
     real :: dubdiff, dubdifftemp, sum, dtemp, d_ang_int, pi, correction
@@ -1450,28 +1450,34 @@
         if(storedatal .OR. storeangl .OR. store_enrg .OR. store_nucleons) then
           do ejtype = 1, 11
             
+            if ( storeangl .AND. store_nucleons ) then
+              tempShift = -2
+            else
+              tempShift = 0
+            endif
+            
             ! Making a variable offset for nucleons
             if ( store_nucleons ) then
               if ( ejtype.eq.2 ) then
-                offset = 14
+                offset = 14 + tempShift
               elseif ( ejtype.eq.3 ) then
-                offset = 13
+                offset = 13 + tempShift
               elseif ( ejtype.eq.4 ) then
-                offset = 14
+                offset = 14 + tempShift
               elseif ( ejtype.eq.5 ) then
-                offset = 13
+                offset = 13 + tempShift
               elseif ( ejtype.eq.6 ) then
-                offset = 14
+                offset = 14 + tempShift
               elseif ( ejtype.eq.7 ) then
-                offset = 17
+                offset = 17 + tempShift
               elseif ( ejtype.eq.8 ) then
-                offset = 17
+                offset = 17 + tempShift
               elseif ( ejtype.eq.9 ) then
-                offset = 17
+                offset = 17 + tempShift
               elseif ( ejtype.eq.10 ) then
-                offset = 17
+                offset = 17 + tempShift
               elseif ( ejtype.eq.11 ) then
-                offset = 15
+                offset = 15 + tempShift
               endif
             endif
             
