@@ -2,17 +2,9 @@ Instruction No.  1
 Instruction No.  2
 Instruction No.  3
 Instruction No.  4
- 
-3
-bthcl_Mar.out
-bthcl_preeq.out
-bthl.out
-bth
 
-5
-upc.out
-upcl_Oct.out
-upcl_Mar.out
-upcl_preeq.out
-upl_e7.out
-upTest
+  3
+temp.prm
+NeU.cl.out
+NeU.l.out
+tNeU.dd.txt

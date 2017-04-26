@@ -380,7 +380,8 @@
               theta(j) = (ang1(j) + ang2(j))/2
               ang_width = ang_width + abs(theta(j)-ang2(j))
             enddo
-            dtheta = ang_width/j
+            ! dtheta = ang_width/j
+            dtheta = 5.d0
           endif
           
         else
@@ -599,7 +600,7 @@
 950 format (11f9.4)
 1000 format (i3.1, ', ', a)
 1100 format (5i3.1, f7.3, f10.3, i12)
-1200 format (6i3.1)
+1200 format (6i5.1)
 1300 format (f5.2)
 1400 format (f5.2, ', ', f5.2)
 1500 format ("Instruction No. ", i2)
