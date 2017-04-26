@@ -285,16 +285,15 @@
         print *, 'Projectile Energy (GeV/A) = ? '
         print *, "(Enter a Negative No. for MeV)"
         read(*,*) T0
+
         if(T0.lt.0) then
           ! Units are MeV
           t0mev_c = -1*T0
           T0 = abs(T0/(aproj*1000.d0))
         else
-          t0mev_c = T0*1000.d0
+          t0mev_c = T0*1000.d0*aproj
         endif
-        t0mev = -1*T0
-        t0max = t0mev*1.01
-        t0max_c = 1.01*t0mev_c
+        t0max_c = 1.2*t0mev_c
         
         ! No. Simulations
         print *, ''
@@ -594,12 +593,12 @@
 400 format (i9.0)
 500 format (i2, ', ', i2, ', ', i2)
 600 format (i3, ', ', i3)
-700 format (20i5.2)
+700 format (20i8.2)
 800 format (12f13.3)
 900 format (11i6.1)
-950 format (11f9.4)
+950 format (11f9.3)
 1000 format (i3.1, ', ', a)
-1100 format (5i3.1, f7.3, f10.3, i12)
+1100 format (5i5.1, f7.3, f10.3, i12)
 1200 format (6i5.1)
 1300 format (f5.2)
 1400 format (f5.2, ', ', f5.2)
