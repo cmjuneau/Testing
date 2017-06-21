@@ -927,7 +927,7 @@
           ! write(test,300) tot_files
         endif
         
-        ! Writing file namess into output
+        ! Writing file names into output
         write(test,100) ""
         write(test,300) 3
         if(include_CEM) then
@@ -1809,8 +1809,8 @@
     return
 
 !  ========================================================
-100 format("Ejectile   E (MeV)   Theta (Deg)   :         Files - up to 6")
-150 format(i7.1, " ", i8.1, " ", i10.1, "        :  ", 6es17.7)
+100 format("Ejectile,   E (MeV),   Theta (Deg),            Files - up to 6")
+150 format(i7.1, ", ", i8.1, ", ", i10.1, "          ", 6(',', es17.7))
 200 format("Ejectile   E (MeV)    :         Files - up to 6")
 250 format(i7.1, " ", i9.1, "     :  ", 6es17.7)
 300 format("Ejectile    Theta (Deg)   :         Files - up to 6")
@@ -1818,7 +1818,8 @@
 
   end subroutine make_doubledif
 
-!  ========================================================!  ========================================================
+!  ========================================================
+!  ========================================================
 
   subroutine store_yieldmult(i)
     implicit none

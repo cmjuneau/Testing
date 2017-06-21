@@ -556,7 +556,7 @@
           ! write(test,300) tot_files
         endif
         
-        ! Writing file namess into output
+        ! Writing file names into output
         write(test,100) ""
         write(test,300) 3
         if(include_CEM) then
