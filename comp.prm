@@ -3,6 +3,6 @@ example.c
 example.l
 output.txt
 
-pC.gc.out
-pC.gNew.out
-pC
+tempTest.out
+tempTest1.out
+TEST

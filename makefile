@@ -37,15 +37,14 @@ test:
 #
 clean:
 	@ clear
-	@ echo '---> clean:   remove   *.aux  *.r10  *.r11  *.txt'
-	@ rm -f  *.aux *.inf  *.r10 *.r11 *.txt *.CEM1 *.LAQ1 *.LAQ2
+	@ echo '---> clean:   remove   *.aux  *.r10  *.r11  *.txt *.png *.dat'
+	@ rm -f  *.aux *.inf  *.r10 *.r11 *.txt *.png *.dat *~ *#
 #
 veryclean:
 	@ clear
-	@ echo '---> clean:   remove  *.o  *.aux  *.r10  *.r11  *.txt  test.EXE'
-	@ echo '--->					        *.inp  *.out'
-	@ rm -f *.o  *.inf  *.r10  *.r11  *.l  *.c  test.EXE  *.out\
-	 *.CEM1 *.LAQ1 *.LAQ2
+	@ make clean
+	@ echo '--->		test.EXE *.inp *.out'
+	@ rm -f test.EXE *.inp *.out
 #
 
 srctot.f90: $(SRCTOT)
