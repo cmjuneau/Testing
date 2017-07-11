@@ -108,7 +108,7 @@
       ipar1     = 1
       ipar2     = 9 ! used in conjunction with mdubl (picking which spectra we want)
       num_bin   = 13
-      tstep     = 2.d0/1000.d0
+      tstep     = 1.d0/1000.d0
       nevtype   = 66
       npreqtype = 66
       ipisa     = 1
@@ -221,6 +221,17 @@
           include_CEM = .false.
         elseif(aproj.eq.-1.d0) then
           ! Pions
+          if(zproj.eq.-1.d0) then
+             pname = 'pimi'
+          elseif(zproj.eq.0.d0) then
+             pname = 'pize'
+          elseif(zproj.eq.1.d0) then
+             pname = 'pipl'
+          else
+             ! Error
+             write(*,*) "ERROR: Invalid pion declaration.  Stopping program..."
+             stop
+          endif
           print *, ''
           print *, 'ERROR: LAQGSM cannot handle this projectile,'
           print *, 'error making LAQGSM input; continuing on...'
@@ -288,10 +299,12 @@
 
         if(T0.lt.0) then
           ! Units are MeV
-          t0mev_c = -1*T0
-          T0 = abs(T0/(aproj*1000.d0))
+          t0mev_c = abs(T0)
+          T0 = abs(T0/(1000.d0))
+          if ( aproj.gt.1 ) T0 = T0/aproj
         else
-          t0mev_c = T0*1000.d0*aproj
+          t0mev_c = T0*1000.d0
+          if ( aproj.gt.1 ) t0mev_c = t0mev_c*aproj
         endif
         t0max_c = 1.2*t0mev_c
         
@@ -333,25 +346,20 @@
           k = t0max_c/num_bin
           k = max(k,1)
           tmin(1) = 0
-          tmin(2) = (num_bin*k/13)
-          tmin(3) = (3*num_bin*k/13)
-          tmin(4) = (7*num_bin*k/13)
+          tmin(2) = 250
+          tmin(3) = 500
+          tmin(4) = 1500
         
           do j = 1, 10
             dp(j) = k
           enddo
   
-          if(spaced) then
-            dt(1) = k/8
-            dt(2) = k/4
-            dt(3) = k/2
-            dt(4) = k
-          else
-            do j = 1, 4
-              dt(j) = k*1000.d0 ! in MeV
-            enddo
-          endif
+          dt(1) = 1
+          dt(2) = 2
+          dt(3) = 5
+          dt(4) = 10
         endif
+
         pmin    = 0
         tmax(1) = tmin(2)
         tmax(2) = tmin(3)
@@ -384,17 +392,17 @@
           endif
           
         else
-          ang_start = 16
-          ang_width = ang_start/2
+          ang_start = 20
+          ang_width = 5
           
           do j = 1, 10
-            ang1(j) = j*ang_start - (ang_width)
-            ang2(j) = j*ang_start + (ang_width)
+            ang1(j) = (j-1)*10 - (ang_width) + ang_start
+            ang2(j) = (j-1)*10 + (ang_width) + ang_start
           enddo
           
           if(include_LAQ) then
             do j = 1, 10
-              theta(j) = j*ang_start
+              theta(j) = (ang1(j) + ang2(j))/2
               ang(j)   = theta(j)
             enddo
             dtheta = ang_width

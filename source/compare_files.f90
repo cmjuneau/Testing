@@ -4,14 +4,16 @@
     implicit none
 
 ! This program compares files that are input by the user.
-! One issue that has not been fixed (or been bothered to be fixed)
-! includes having to manually enter the number of lines in the file
-! as the very first line in the file.  Otherwise, this little
-! diddy does the job!
+! This program reads in 2 file names, and opens and reads
+! the files.  The data is stored here, and each string is
+! compared character for character.  Empty lines in the
+! files are filled with "No Line Information" so it is
+! obvious that no information was in the line.
 
 
 ! ----- Setting up variables -----
-    integer :: MaxLines, nl, nlmax, num, i, j, k, totmismatch, start, temp
+    integer :: MaxLines, nl, nlmax, num, i, j, k, totmismatch, start
+    integer :: temp, temp2
     integer :: mismatch(30000), test1, test2, test3
 
     character(LEN = 300) :: output, line1(30000), line2(30000)
@@ -19,10 +21,11 @@
     character(LEN =  30) :: input1, input2, outFile
     character(LEN =   4) :: ext
 
-    logical :: makeOutput
+    logical :: makeOutput, first
 
     common  /maxline/  MaxLines
     common  /outp/     output(10,30000), nl(3)
+    data first / .true. /
 
     line1 = "- - - - - NO LINE INFORMATION - - - - -"
     line2 = "- - - - - NO LINE INFORMATION - - - - -"
@@ -122,17 +125,22 @@
           do j = start, nlmax
              if ( mismatch(j).eq.1 ) then
                 temp = temp + 1
-                if ( temp.gt.100 ) then
-                   do k = 1, 3
-                      write(num,*) " ."
-                   enddo
+                temp2 = totmismatch - temp
+                if ( temp.gt.50 .AND. temp2.gt.10) then
+                   if ( first ) then
+                      first = .false.
 
-                   write(num,*) 'ETC.'
+                      do k = 1, 5
+                         write(num,*) " ."
+                      enddo
 
-                   do k = 1, 3
-                      write(num,*) " ."
-                   enddo
-                   go to 100
+                      write(num,*) 'ETC.'
+
+                      do k = 1, 5
+                         write(num,*) " ."
+                      enddo
+
+                   endif
                 else
                    write(num,*) 'Mismatch at line', j
                    write(num,*) '   -> From ', trim(input1), ':		', trim(line1(j))

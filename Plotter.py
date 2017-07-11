@@ -199,11 +199,18 @@ class PlotClass:
         return self.__locX
 
     # --------------------------------------------------------------------------
-    def setLocY(self, locY):
-        self.__locY = locY
+    def setScalerX(self, scalerX):
+        self.__scalerX = scalerX
 
-    def getLocY(self):
-        return self.__locY
+    def getScalerX(self):
+        return self.__scalerX
+
+    # --------------------------------------------------------------------------
+    def setScalerY(self, scalerY):
+        self.__scalerY = scalerY
+
+    def getScalerY(self):
+        return self.__scalerY
 
     # --------------------------------------------------------------------------
     def checkErrors(self):
@@ -930,12 +937,14 @@ while getDetails == 0:
     linesUsed += 1  # Iterating number of lines used to define plot
 
     if temp.strip().lower() == 'end plot':
-        # Plot Definition Ended
 
-        # --------------------------------------------------------------
-        # Create plot here
-        # -------------
-        error = myPlot.createPlot()
+        # Plot Definition Ended; create plot if it is saved or displayed
+        if not myPlot.getSave() == "" or myPlot.getShowPlot():
+            error = myPlot.createPlot()
+        else:
+            error = 0
+            print('No Plot to be generated, plot not displayed or save.')
+
         if not error == 0:
             # Stopping program if signaled by createPlot() function
             if verbose > 0:
@@ -1304,6 +1313,34 @@ while getDetails == 0:
             # For Testing
             if testing > 1:
                 print('Legend Y location changed to %.1f.' %(myPlot.getLocY()))
+
+        # ---------------------------------------------------------------------
+        elif flag == 'scalerX'.lower():
+
+            # Obtaining number from item
+            scalerX = float(item.lower().strip())
+
+            # Must be from 0 to 1 to have lower left corner in figure
+            myPlot.setScalerX(scalerX)
+
+            # For Testing
+            if verbose > 0:
+                print('X-axis Simulated Data scaled by %.1f.' %(
+                    myPlot.getScalerX()))
+
+        # ---------------------------------------------------------------------
+        elif flag == 'scalerY'.lower():
+
+            # Obtaining number from item
+            scalerY = float(item.lower().strip())
+
+            # Must be from 0 to 1 to have lower left corner in figure
+            myPlot.setScalerY(scalerY)
+
+            # For Testing
+            if verbose > 0:
+                print('Y-axis Simulated Data scaled by %.1f.' %(
+                    myPlot.getScalerY()))
 
         # ---------------------------------------------------------------------
         elif flag == 'reformat'.lower():
