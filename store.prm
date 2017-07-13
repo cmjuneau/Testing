@@ -5,24 +5,6 @@ Instruction No.  4
 
 3
 NeU.gMV.out
-NeU.gMVU.out
+NeU.CascTally.out
 NeU.l.out
-MV.
-
-3
-NeU.noExtra.out
-NeU.extra.out
-NeU.l.out
-ExtraTally.
-
-3
-NeU.v1-5.out
-NeU.v1-6.out
-NeU.l.out
-Vers.
-
-3
-NeU.reset.out
-NeU.noReset.out
-NeU.l.out
-Reset.
+CascTally.
