@@ -378,7 +378,7 @@
 !   by the CEM, LAQGSM, and CEM-LAQ codes.  This routine will allow
 !   for ease in trying to create files for each code.
     
-    integer :: i, j, k, l, m, n, jg, num_bin
+    integer :: i, j, k, l, m, n, jg, num_bin, ZAID
     integer :: tot_files, cem, claq, laq, ang_width, ang_start, temp
     real    :: tstep
     
@@ -402,6 +402,7 @@
     integer :: ang(10), dang, test
     
 ! Character variables used in CEM/LAQGSM
+    character(LEN = 100) :: pHeading(2)
     character(LEN = 17) :: laux1_s, laux2_s, name_s
     character(LEN = 16) :: clinp_s, clout_s, claux_s
     character(LEN = 15) :: cinp_s, cout_s, linp_s, lout_s, caux_s
@@ -410,7 +411,7 @@
     character(LEN =  9) :: lvl,shell
     character(LEN =  8) :: atab, mass, test_inp, temp_inp
     character(LEN =  7) :: la1_s, la2_s
-    character(LEN =  6) :: cli_s, cl_s, cla_s
+    character(LEN =  6) :: cli_s, cl_s, cla_s, ZAID_s
     character(LEN =  5) :: ci_s, c_s, li_s, l_s, ca_s, stat
     character(LEN =  4) :: pname
     character(LEN =  1) :: inc_Old, custom_ang
@@ -418,6 +419,9 @@
     logical :: include_CEM, include_CEMLAQ, include_LAQ, get_Info
     logical :: get_constants, print_ibrems, choice, spaced, write_test
     logical :: first
+
+    data pHeading / '     ZAID, prot - proton, neut - neutron, pipl - pi+, pimi - pi-, pize - pi0,', &
+         & '     gamm - gamma with fixed energy, gamb - bremss. gamma, stop - no more calc.' /
     
     ! Default values
     include_CEM    = .false.
@@ -475,7 +479,7 @@
       ipar1     = 1
       ipar2     = 9 ! used in conjunction with mdubl (picking which spectra we want)
       num_bin   = 13
-      tstep     = 2.d0/1000.d0
+      tstep     = 1.d0/1000.d0
       nevtype   = 66
       npreqtype = 66
       ipisa     = 1
@@ -568,15 +572,19 @@
         endif
         
         ! Projectile
+10      continue
         pname = 'unkn'
         print *, ''
         print *, "A, Z, STIN (Projectile) = ? "
         read(*,*) aproj, zproj, stin
+        ! print , "Enter ZAID or PNAME below..."
+        ! read(*,*) ZAID
+
         aproj_l = aproj
         zproj_l = zproj
         if(zproj.gt.aproj .AND. aproj.gt.0) then
           print *, "Projectile Mass Error, please re-try..."
-          stop
+          go to 10
         endif
         if(aproj.gt.1) then
           print *, "ERROR: Classic CEM cannot handle this projectile,"
@@ -584,6 +592,17 @@
           include_CEM = .false.
         elseif(aproj.eq.-1.d0) then
           ! Pions
+          if(zproj.eq.-1.d0) then
+             pname = 'pimi'
+          elseif(zproj.eq.0.d0) then
+             pname = 'pize'
+          elseif(zproj.eq.1.d0) then
+             pname = 'pipl'
+          else
+             ! Error
+             write(*,*) "ERROR: Invalid pion declaration.  Stopping program..."
+             stop
+          endif
           print *, ''
           print *, 'ERROR: LAQGSM cannot handle this projectile,'
           print *, 'error making LAQGSM input; continuing on...'
@@ -607,7 +626,7 @@
               pname = 'neut';
             else
               print *, 'ERROR: invalid target selection!'
-              stop
+              go to 10
             endif
           else
             ! Other particle
@@ -618,14 +637,29 @@
         if(aproj.eq.0 .AND. cm0.lt.0.00001d0) then
           print_ibrems = .true.
         endif
-        
+
+        if ( pname.eq.'unkn' ) then
+
+           ! CEM not applicable; not nucleon projectile
+           ZAID = (1000*zproj) + (aproj)
+           write(ZAID_s,"(i6)") ZAID
+
+        else
+
+           ZAID_s = trim(pname)
+
+        endif
+
+        print *, "ZAID is ", trim(ZAID_s)
+
         ! Target
+20      continue
         print *, ''
         print *, 'A, Z (Target) = ? '
         read(*,*) atarg, ztarg
         if(ztarg.gt.atarg) then
           print *, "Target Mass Error, please re-try..."
-          stop
+          go to 20
         endif
         
         ! Energy
@@ -633,16 +667,17 @@
         print *, 'Projectile Energy (GeV/A) = ? '
         print *, "(Enter a Negative No. for MeV)"
         read(*,*) T0
+
         if(T0.lt.0) then
           ! Units are MeV
-          t0mev_c = -1*T0
-          T0 = abs(T0/(aproj*1000.d0))
+          t0mev_c = abs(T0)
+          T0 = abs(T0/(1000.d0))
+          if ( aproj.gt.1 ) T0 = T0/aproj
         else
           t0mev_c = T0*1000.d0
+          if ( aproj.gt.1 ) t0mev_c = t0mev_c*aproj
         endif
-        t0mev = -1*T0
-        t0max = t0mev*1.01
-        t0max_c = 1.01*t0mev_c
+        t0max_c = 1.2*t0mev_c
         
         ! No. Simulations
         print *, ''
@@ -682,25 +717,20 @@
           k = t0max_c/num_bin
           k = max(k,1)
           tmin(1) = 0
-          tmin(2) = (num_bin*k/13)
-          tmin(3) = (3*num_bin*k/13)
-          tmin(4) = (7*num_bin*k/13)
+          tmin(2) = 250
+          tmin(3) = 500
+          tmin(4) = 1500
         
           do j = 1, 10
             dp(j) = k
           enddo
   
-          if(spaced) then
-            dt(1) = k/8
-            dt(2) = k/4
-            dt(3) = k/2
-            dt(4) = k
-          else
-            do j = 1, 4
-              dt(j) = k*1000.d0 ! in MeV
-            enddo
-          endif
+          dt(1) = 1
+          dt(2) = 2
+          dt(3) = 5
+          dt(4) = 10
         endif
+
         pmin    = 0
         tmax(1) = tmin(2)
         tmax(2) = tmin(3)
@@ -728,21 +758,22 @@
               theta(j) = (ang1(j) + ang2(j))/2
               ang_width = ang_width + abs(theta(j)-ang2(j))
             enddo
-            dtheta = ang_width/j
+            ! dtheta = ang_width/j
+            dtheta = 5.d0
           endif
           
         else
-          ang_start = 16
-          ang_width = ang_start/2
+          ang_start = 20
+          ang_width = 5
           
           do j = 1, 10
-            ang1(j) = j*ang_start - (ang_width)
-            ang2(j) = j*ang_start + (ang_width)
+            ang1(j) = (j-1)*10 - (ang_width) + ang_start
+            ang2(j) = (j-1)*10 + (ang_width) + ang_start
           enddo
           
           if(include_LAQ) then
             do j = 1, 10
-              theta(j) = j*ang_start
+              theta(j) = (ang1(j) + ang2(j))/2
               ang(j)   = theta(j)
             enddo
             dtheta = ang_width
@@ -766,8 +797,8 @@
         write(cem,100) trim(caux_s)
         write(cem,100) trim(cout_s)
         write(cem,100) pname
-        write(cem,100) '---heading1---'
-        write(cem,100) '---heading2---'
+        write(cem,100) trim(pHeading(1))
+        write(cem,100) trim(pHeading(2))
         write(cem,200) t0mev_c
         write(cem,300) atarg
         write(cem,300) ztarg
@@ -810,16 +841,25 @@
         print *, ''
         print *, "Creating CEMLAQ input"
         
-        ! Writing to CEM input file
+        ! Writing to CEM-LAQ input file
         open (claq, file = clinp_s, status = 'unknown')
         write(claq,100) trim(claux_s)
         write(claq,100) trim(clout_s)
-        write(claq,500) aproj, zproj, STIN
-        write(claq,600) atarg, ztarg
-        write(claq,200) t0mev
-        write(claq,200) dt0
-        write(claq,200) t0max
+        write(claq,100) trim(ZAID_s)
+        write(claq,100) trim(pHeading(1))
+        write(claq,100) trim(pHeading(2))
+        ! write(claq,500) aproj, zproj, STIN
+        write(claq,200) t0mev_c
+        write(claq,300) atarg
+        write(claq,300) ztarg
         write(claq,400) limc
+        write(claq,200) dt0_c
+        write(claq,200) t0max_c
+        ! write(claq,600) atarg, ztarg
+        ! write(claq,200) t0mev
+        ! write(claq,200) dt0
+        ! write(claq,200) t0max
+        ! write(claq,400) limc
         write(claq,1300) dteta
         write(claq,300) mspec
         write(claq,300) mpyld
@@ -846,7 +886,8 @@
         write(claq,1600) aproj, zproj, pname
         write(claq,1610) atarg, ztarg
         write(claq,1620) T0, limc
-        write(claq,500) stp, stp, stp
+        write(claq,100) "stop"
+        ! write(claq,500) stp, stp, stp
         close(claq)
       endif
       
@@ -894,7 +935,7 @@
           ! write(test,300) tot_files
         endif
         
-        ! Writing file namess into output
+        ! Writing file names into output
         write(test,100) ""
         write(test,300) 3
         if(include_CEM) then
@@ -923,171 +964,194 @@
     print *, ''
     return
 !  ====================================
-  50 format ("Bin No. ", i2)
- 100  format (a)  
- 200  format (f14.5)
- 300  format (i3)
- 400  format (i9.0)
- 500  format (i2, ', ', i2, ', ', i2)
- 600  format (i3, ', ', i3)
- 700  format (20i5.2)
- 800  format (12f13.3)
- 900  format (11i6.1)
- 950  format (11f9.4)
- 1000 format (i3.1, ', ', a)
- 1100 format (5i3.1, f7.3, f10.3, i12)
- 1200 format (6i3.1)
- 1300 format (f5.2)
- 1400 format (f5.2, ', ', f5.2)
- 1500 format ("Instruction No. ", i2)
- 1600 format ("Projectile A, Z: ", i3, ', 'i3, "   (", A, ")")
- 1610 format ("Target A, Z: ", i3, ', ',i3)
- 1620 format ("Energy (GeV/A), limc: ", f8.4, ', ' i9.0)
- 
+50  format ("Bin No. ", i2)
+100 format (a)  
+200 format (f14.5)
+300 format (i3)
+350 format (i6)
+400 format (i9.0)
+500 format (i2, ', ', i2, ', ', i2)
+600 format (i3, ', ', i3)
+700 format (20i8.2)
+800 format (12f13.3)
+900 format (11i6.1)
+950 format (11f9.3)
+1000 format (i3.1, ', ', a)
+1100 format (5i5.1, f7.3, f10.3, i12)
+1200 format (6i5.1)
+1300 format (f5.2)
+1400 format (f5.2, ', ', f5.2)
+1500 format ("Instruction No. ", i2)
+1600 format ("Projectile A, Z: ", i3, ', 'i3, "   (", A, ")")
+1610 format ("Target A, Z: ", i3, ', ',i3)
+1620 format ("Energy (GeV/A), limc: ", f8.4, ', ' i9.0)
+
   end subroutine make_Inputs
-	 
-!  ========================================================!  ========================================================
+
+!  ========================================================
+!  ========================================================
 
   subroutine compare_multiple_files(input1, input2, outFile, num)
     implicit none
 
-!		This program compares files that are input by the user.
-!		One issue that has not been fixed (or been bothered to be fixed)
-!		includes having to manually enter the number of lines in the file
-!		as the very first line in the file.  Otherwise, this little
-!		diddy does the job!
+! This program compares files that are input by the user.
+! This program reads in 2 file names, and opens and reads
+! the files.  The data is stored here, and each string is
+! compared character for character.  Empty lines in the
+! files are filled with "No Line Information" so it is
+! obvious that no information was in the line.
 
 
-!		----- Setting up variables -----
-    integer :: MaxLines, nl, nlmax, num, i, j, totmismatch, start
-		integer :: mismatch(30000), test1, test2, test3
-    
+! ----- Setting up variables -----
+    integer :: MaxLines, nl, nlmax, num, i, j, k, totmismatch, start
+    integer :: temp, temp2
+    integer :: mismatch(30000), test1, test2, test3
+
     character(LEN = 300) :: output, line1(30000), line2(30000)
     character(LEN =  34) :: outname
-		character(LEN =  30) :: input1, input2, outFile
+    character(LEN =  30) :: input1, input2, outFile
     character(LEN =   4) :: ext
-    
-		logical :: makeOutput
-    
+
+    logical :: makeOutput, first
+
     common  /maxline/  MaxLines
     common  /outp/     output(10,30000), nl(3)
-    
-    
-		line1 = "- - - - - NO LINE INFORMATION - - - - -"
-		line2 = "- - - - - NO LINE INFORMATION - - - - -"
+    data first / .true. /
 
-		
-		print *, '========================================'
-		print *, '---   Comparing files for ', trim(outFile), '   ---'
-		print *, '========================================'
-		print *, "---   Files being compared   ---"
-		print *, "   1) ", trim(input1)
-		print *, "   2) ", trim(input2)
-		print *, '========================================'
-		print *, " "	
+    line1 = "- - - - - NO LINE INFORMATION - - - - -"
+    line2 = "- - - - - NO LINE INFORMATION - - - - -"
+
+    print *, '========================================'
+    print *, '---   Comparing files for ', trim(outFile), '   ---'
+    print *, '========================================'
+    print *, "---   Files being compared   ---"
+    print *, "   1) ", trim(input1)
+    print *, "   2) ", trim(input2)
+    print *, '========================================'
+    print *, " "	
 
     ! Transferring variables from output variable to line1 variable
-		do j = 1, nl(1)
-      line1(j) = output(1,j)
+    do j = 1, nl(1)
+       line1(j) = output(1,j)
     enddo
-    
+
     ! Transferring variables from output variable to line2 variable
     do j = 1, nl(2)
-      line2(j) = output(2,j)
+       line2(j) = output(2,j)
     enddo
-    
-	
-!  comparing lines in files
-		totmismatch = 0
-		mismatch = 0
-		start = 31
+
+    ! comparing lines in files
+    totmismatch = 0
+    mismatch = 0
+    start = 31
     nlmax= max(nl(1), nl(2))
-	  do j = start, nlmax
-			if( line1(j).ne.line2(j) .AND. (j.ne.39 .AND. j.ne.51 .AND. j.ne.88)) then
-				print *, 'Mismatch at line', j
-				mismatch(j) = 1
-				totmismatch = totmismatch + 1
-			endif
-		enddo
-		
-		print *, ''
-		print *, '--------------------'
-		if( totmismatch.eq.0) then
-			print *, '--->No Mismatches!'
-		else
-			print *, 'Total mismatches: ', totmismatch
-		endif
-		print *, '--------------------'
-		print *, ''
+    do j = start, nlmax
+       if( line1(j).ne.line2(j) .AND. (j.ne.39 .AND. j.ne.51 .AND. j.ne.88)) then
+          ! print *, 'Mismatch at line', j
+          mismatch(j) = 1
+          totmismatch = totmismatch + 1
+       endif
+    enddo
+
+    print *, ''
+    print *, '--------------------'
+    if( totmismatch.eq.0) then
+       print *, '--->No Mismatches!'
+    else
+       print *, 'Total mismatches: ', totmismatch
+    endif
+    print *, '--------------------'
+    print *, ''
     call sleep(1)
 			
-!		----- Formatting output file -----
+    ! ----- Formatting output file -----
     makeOutput = .true.
     if (makeOutput) then
-      ext = ".txt"
-      outname = trim(outFile) // ext
-			open (num, file = outname, status = 'new')
-      
-			write(num,*) 'Comparing the following files: '
-			write(num,*) "     1) ", trim(input1), "		('New' Version)"
-			write(num,*) "     2) ", trim(input2), "		('Old' Version)"
-			write(num,*) ''		
-			write(num,*)'Lines in ', trim(input1), ': ', nl(1)
-			write(num,*)'Lines in ', trim(input2), ': ', nl(2)
-			write(num,*) ''
-			if ( totmismatch.eq.0 ) then
-				write(num,*) '--------------------'
-				write(num,*) '---> No mismatches'
-				write(num,*) '--------------------'
-				write(num,*) ''
-				write(num,*) "----------"
-				write(num,*) '| Proof: |'
-				write(num,*) "----------"
-				write(num,*) ' '
-				test1 = 252
-				test2 = 550
-				test3 = 1105
-				write(num,*) 'Line ', test1
-				write(num,*) line1(test1)
-				write(num,*) line2(test1)
-				write(num,*) ' '
+       ext = ".txt"
+       outname = trim(outFile) // ext
+       open (num, file = outname, status = 'new')
 
-				write(num,*) 'Line ', test2
-				write(num,*) line1(test2)
-				write(num,*) line2(test2)
-				write(num,*) ' '
+       write(num,*) 'Comparing the following files: '
+       write(num,*) "     1) ", trim(input1), "		('New' Version)"
+       write(num,*) "     2) ", trim(input2), "		('Old' Version)"
+       write(num,*) ''		
+       write(num,*)'Lines in ', trim(input1), ': ', nl(1)
+       write(num,*)'Lines in ', trim(input2), ': ', nl(2)
+       write(num,*) ''
+       if ( totmismatch.eq.0 ) then
+          write(num,*) '--------------------'
+          write(num,*) '---> No mismatches'
+          write(num,*) '--------------------'
+          write(num,*) ''
+          write(num,*) "----------"
+          write(num,*) '| Proof: |'
+          write(num,*) "----------"
+          write(num,*) ' '
+          test1 = 252
+          test2 = 550
+          test3 = 1105
+          write(num,*) 'Line ', test1
+          write(num,*) line1(test1)
+          write(num,*) line2(test1)
+          write(num,*) ' '
 
-				write(num,*) 'Line ', test3
-				write(num,*) line1(test3)
-				write(num,*) line2(test3)
-				write(num,*) ' '
-			else
-				write(num,*) ''
-				write(num,*) '--------------------'
-				write(num,*) 'Total mismatches: ', totmismatch
-				write(num,*) '--------------------'
-				write(num,*) ''
-				write(num,*) 'Differences occurred at the following lines:'
-				write(num,*) ''
-				do j = start, nlmax
-					if ( mismatch(j).eq.1 ) then
-						write(num,*) 'Mismatch at line', j
-						write(num,*) '   -> From ', trim(input1), ':		', trim(line1(j))
-						write(num,*) '   -> From ', trim(input2), ':		', trim(line2(j))
-						write(num,*) ''
-					endif
-				enddo
-			endif
-			close(num)	
-			print *, "--  Output file ", trim(outname), " created with results  --"
-			print *, " "
-		endif
-    
-		
-		return
-	end subroutine compare_multiple_files
+          write(num,*) 'Line ', test2
+          write(num,*) line1(test2)
+          write(num,*) line2(test2)
+          write(num,*) ' '
+
+          write(num,*) 'Line ', test3
+          write(num,*) line1(test3)
+          write(num,*) line2(test3)
+          write(num,*) ' '
+       else
+          write(num,*) ''
+          write(num,*) '--------------------'
+          write(num,*) 'Total mismatches: ', totmismatch
+          write(num,*) '--------------------'
+          write(num,*) ''
+          write(num,*) 'Differences occurred at the following lines:'
+          write(num,*) ''
+          temp = 0
+          do j = start, nlmax
+             if ( mismatch(j).eq.1 ) then
+                temp = temp + 1
+                temp2 = totmismatch - temp
+                if ( temp.gt.50 .AND. temp2.gt.10) then
+                   if ( first ) then
+                      first = .false.
+
+                      do k = 1, 5
+                         write(num,*) " ."
+                      enddo
+
+                      write(num,*) 'ETC.'
+
+                      do k = 1, 5
+                         write(num,*) " ."
+                      enddo
+
+                   endif
+                else
+                   write(num,*) 'Mismatch at line', j
+                   write(num,*) '   -> From ', trim(input1), ':		', trim(line1(j))
+                   write(num,*) '   -> From ', trim(input2), ':		', trim(line2(j))
+                   write(num,*) ''
+                endif
+             endif
+          enddo
+100       continue
+       endif
+       close(num)	
+       print *, "--  Output file ", trim(outname), " created with results  --"
+       print *, " "
+    endif
+
+    return
+  end subroutine compare_multiple_files
 	 
-!  ========================================================!  ========================================================
+!  ========================================================
+!  ========================================================
 
   subroutine store_doubledif(i)
     implicit none
@@ -1119,7 +1183,7 @@
 !
 !		----- Setting up variables -----
     integer :: i, ej, T, theta, headmult, MaxLines, nl, j, k, l, eject, indx, ddang(10)
-    integer :: tindx, Ti, Tf, corr, ejtype, ejindx, ejecta(11), energi, thetai, stat
+    integer :: tindx, Ti, Tf, corr, ejtype, ejindx, ejecta(11), energi, thetai, stat, tempShift
     integer :: offset, N, dataSet, partNum(10), tempNum
     real :: ddif, ang(360), tempang, angint, Tir, Tfr, temp, thetar, lang(11),energr
     real :: dubdiff, dubdifftemp, sum, dtemp, d_ang_int, pi, correction
@@ -1415,28 +1479,34 @@
         if(storedatal .OR. storeangl .OR. store_enrg .OR. store_nucleons) then
           do ejtype = 1, 11
             
+            if ( storeangl .AND. store_nucleons ) then
+              tempShift = -2
+            else
+              tempShift = 0
+            endif
+            
             ! Making a variable offset for nucleons
             if ( store_nucleons ) then
               if ( ejtype.eq.2 ) then
-                offset = 14
+                offset = 14 + tempShift
               elseif ( ejtype.eq.3 ) then
-                offset = 13
+                offset = 13 + tempShift
               elseif ( ejtype.eq.4 ) then
-                offset = 14
+                offset = 14 + tempShift
               elseif ( ejtype.eq.5 ) then
-                offset = 13
+                offset = 13 + tempShift
               elseif ( ejtype.eq.6 ) then
-                offset = 14
+                offset = 14 + tempShift
               elseif ( ejtype.eq.7 ) then
-                offset = 17
+                offset = 17 + tempShift
               elseif ( ejtype.eq.8 ) then
-                offset = 17
+                offset = 17 + tempShift
               elseif ( ejtype.eq.9 ) then
-                offset = 17
+                offset = 17 + tempShift
               elseif ( ejtype.eq.10 ) then
-                offset = 17
+                offset = 17 + tempShift
               elseif ( ejtype.eq.11 ) then
-                offset = 15
+                offset = 15 + tempShift
               endif
             endif
             
@@ -1768,8 +1838,8 @@
     return
 
 !  ========================================================
-100 format("Ejectile   E (MeV)   Theta (Deg)   :         Files - up to 6")
-150 format(i7.1, " ", i8.1, " ", i10.1, "        :  ", 6es17.7)
+100 format("Ejectile,   E (MeV),   Theta (Deg),            Files - up to 6")
+150 format(i7.1, ", ", i8.1, ", ", i10.1, "          ", 6(',', es17.7))
 200 format("Ejectile   E (MeV)    :         Files - up to 6")
 250 format(i7.1, " ", i9.1, "     :  ", 6es17.7)
 300 format("Ejectile    Theta (Deg)   :         Files - up to 6")
@@ -1777,7 +1847,8 @@
 
   end subroutine make_doubledif
 
-!  ========================================================!  ========================================================
+!  ========================================================
+!  ========================================================
 
   subroutine store_yieldmult(i)
     implicit none

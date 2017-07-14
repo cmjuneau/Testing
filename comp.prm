@@ -3,10 +3,6 @@ example.c
 example.l
 output.txt
 
-simcl_New.out
-simcl_Err.out
-errDiff
-
-simcl_Old.out
-simcl_New.out
-oldNewDiff
+tempTest.out
+tempTest1.out
+Test.
